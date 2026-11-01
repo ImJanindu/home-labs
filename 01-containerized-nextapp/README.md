@@ -227,32 +227,51 @@ instantly sets the file owner and group to `bun` during the copy operation, prev
 ---
 
 ### Step 5: Building and Running the Container
-From inside `01-containerized-nextapp`, build the Docker image with the tag `homelab-next`:
+
+#### 1. Build the Docker Image
+From inside `01-containerized-nextapp`, build the Docker image with the tag `homelab-next:v1`:
 
 ```bash
-docker build -t homelab-next .
+docker build -t homelab-next:v1 .
 ```
 
 *Observe the build output: Notice how `deps` layers stay cached on subsequent builds when only source files in `app/` are modified.*
 
-Run the container as a detached background service named `nextapp`:
+#### 2. Run the Container with Runtime Environment Variables
+Because `.env*` files are intentionally excluded in `.dockerignore` (to prevent secrets and sensitive configuration from being permanently baked into immutable image layers), the container has no access to local `.env.local` files by default.
+
+To supply production configuration values to the Next.js runtime, pass them dynamically using the `-e` (or `--env`) flag at runtime:
 
 ```bash
 docker run -d \
-  --name nextapp \
-  -p 3000:3000 \
+  --name homelab-next \
   --restart unless-stopped \
-  homelab-next
+  -p 3000:3000 \
+  -e APP_ENV=production \
+  -e APP_VERSION=1.0.0 \
+  -e APP_RUNTIME=Bun \
+  homelab-next:v1
 ```
 
-Verify the container is active and inspect logs:
+**Breakdown of the run command:**
+- `-d`: Detached mode (runs container in the background).
+- `--name homelab-next`: Assigns a clean, human-readable name to the container instead of a random hash.
+- `--restart unless-stopped`: Ensures the container restarts automatically if it crashes or if the EC2 VM reboots.
+- `-p 3000:3000`: Maps port `3000` on the EC2 host to port `3000` inside the container.
+- `-e APP_ENV=production`: Injects the environment variable so the dashboard reflects `Production`.
+- `-e APP_VERSION=1.0.0`: Injects the application version.
+- `-e APP_RUNTIME=Bun`: Injects runtime metadata.
+- `homelab-next:v1`: The target image and version tag to instantiate.
+
+#### 3. Verify Container Status & Logs
+Check that the container is healthy and actively serving requests:
 
 ```bash
 # Check running containers
 docker ps
 
-# Inspect logs
-docker logs -f nextapp
+# Follow live container logs
+docker logs -f homelab-next
 ```
 
 ---
@@ -279,7 +298,7 @@ Open your web browser and navigate to:
 http://<EC2_PUBLIC_IP>:3000
 ```
 
-You will see the live **Homelab Status** dashboard reporting real-time server health, environment details, runtime (`Bun`), and server timestamp directly served from the containerized application on your EC2 VM.
+You will see the live **Homelab Status** dashboard reporting real-time server health, environment details (`Production`), application version (`1.0.0`), runtime (`Bun`), and server timestamp directly served from the containerized application on your EC2 VM.
 
 ---
 
@@ -287,12 +306,13 @@ You will see the live **Homelab Status** dashboard reporting real-time server he
 
 | Command | Description |
 | :--- | :--- |
-| `docker build -t homelab-next .` | Build the image tagged as `homelab-next` |
-| `docker run -d -p 3000:3000 --name nextapp homelab-next` | Run container named `nextapp` in background mapping port 3000 |
+| `docker build -t homelab-next:v1 .` | Build the image tagged as `homelab-next:v1` |
+| `docker run -d -p 3000:3000 --name homelab-next -e APP_ENV=production homelab-next:v1` | Run container named `homelab-next` in background with environment variables |
 | `docker ps` | List all running containers |
-| `docker logs -f nextapp` | Follow live logs from the `nextapp` container |
-| `docker stop nextapp` | Gracefully stop the `nextapp` container |
-| `docker rm nextapp` | Remove the stopped `nextapp` container |
+| `docker ps -a` | List all containers including stopped ones |
+| `docker logs -f homelab-next` | Follow live logs from the `homelab-next` container |
+| `docker stop homelab-next` | Gracefully stop the `homelab-next` container |
+| `docker rm homelab-next` | Remove the stopped `homelab-next` container |
 | `docker images` | Inspect local Docker images and their sizes |
 | `docker system df` | Show Docker disk usage (images, containers, build cache) |
 | `docker system prune -f` | Clean up unused build cache and stopped containers |
@@ -303,5 +323,6 @@ You will see the live **Homelab Status** dashboard reporting real-time server he
 
 - **Build Cache Optimization**: Splitting dependency installation from source code compilation dramatically speeds up iterative builds. Code updates take seconds to build because dependencies remain cached.
 - **Standalone Mode Impact**: Copying `.next/standalone` produces a drastically smaller image footprint compared to copying the full workspace or `node_modules`.
+- **Runtime Environment Injection**: Excluding `.env*` files in `.dockerignore` is best security practice to avoid leaking secrets in image layers. Injecting variables at runtime via `-e` or `--env-file` ensures the image remains environment-agnostic and configurable across staging or production.
 - **Reproducible Scripting**: Utilizing an idempotent setup script like `install-docker.sh` eliminates manual host configuration errors and standardizes new VM provisioning.
 - **Security Group Essentials**: Cloud firewalls operate independently of host firewalls (`ufw`/`iptables`); ensuring the cloud provider's ingress rules match the container host port mapping is critical for accessibility.
