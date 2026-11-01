@@ -1,0 +1,194 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7f8fc;
+  --foreground: #172033;
+  --muted: #64708a;
+  --border: #e6e9f0;
+  --accent: #464feb;
+  --success: #1c9b63;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: var(--accent);
+}
+
+.page-shell {
+  min-height: 100vh;
+  padding: 5rem 1.5rem;
+}
+
+.dashboard {
+  width: min(100%, 54rem);
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0.75rem;
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.page-description {
+  max-width: 34rem;
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.status-card,
+.details-section {
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 1rem 2.5rem rgb(35 48 80 / 6%);
+}
+
+.status-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.status-indicator {
+  width: 0.8rem;
+  height: 0.8rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 0.4rem rgb(28 155 99 / 12%);
+}
+
+.status-card .eyebrow {
+  margin-bottom: 0.25rem;
+}
+
+.status-value {
+  margin-bottom: 0.25rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.status-description {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.details-section {
+  margin-top: 1rem;
+  padding: 1.5rem;
+}
+
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.section-heading .eyebrow {
+  margin-bottom: 0;
+}
+
+h2 {
+  order: -1;
+  margin-bottom: 0;
+  font-size: 1.35rem;
+}
+
+.information-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.information-card {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.7rem;
+  background: #fbfcff;
+}
+
+.information-card dt {
+  margin-bottom: 0.45rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.information-card dd {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.loading-message {
+  padding: 1.5rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+tr th,
+tr td {
+  border: 1px solid var(--border);
+}
+
+tr th {
+  background-color: #f5f5f5;
+}
+
+@media (max-width: 560px) {
+  .page-shell {
+    padding: 3rem 1rem;
+  }
+
+  .information-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-heading {
+    display: block;
+  }
+
+  .section-heading .eyebrow {
+    margin-top: 0.5rem;
+  }
+}
