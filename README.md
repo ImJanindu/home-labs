@@ -29,15 +29,8 @@ Every lab is organized into its own self-contained directory containing:
 ```text
 home-labs/
 ├── LICENSE                      # MIT License
-├── README.md                    # Root index & homelab roadmap (you are here)
+├── README.md                    # Root index & homelab roadmap
 └── 01-containerized-nextapp/    # Lab 01: Dockerized Next.js on AWS EC2
-    ├── .dockerignore            # Docker build context exclusions
-    ├── Dockerfile               # Multi-stage Bun + Next.js build
-    ├── README.md                # In-depth Lab 01 documentation & guide
-    ├── app/                     # Homelab status dashboard web app
-    ├── install-docker.sh        # Automated Docker Engine setup script for Ubuntu
-    ├── next.config.ts           # Next.js standalone build configuration
-    └── package.json             # App dependencies & scripts
 ```
 
 ---
