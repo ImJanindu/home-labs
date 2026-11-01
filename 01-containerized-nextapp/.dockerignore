@@ -1,0 +1,14 @@
+# Build files
+.next/
+node_modules/
+
+# Secrets
+.env*
+
+# Others
+.git/
+.gitignore
+README.md
+*.log
+.DS_Store
+.vscode/
