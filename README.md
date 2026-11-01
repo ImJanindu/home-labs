@@ -20,7 +20,7 @@ Every lab is organized into its own self-contained directory containing:
 | # | Lab | Core Technologies | Description | Status |
 | :---: | :--- | :--- | :--- | :---: |
 | **01** | [**Containerized Next.js App**](./01-containerized-nextapp/) | `Docker`, `Bun`, `Next.js`, `AWS EC2`, `Ubuntu`, `Bash` | Deep dive into Docker architecture, multi-stage caching with Bun & Next.js standalone output, automated host provisioning with `install-docker.sh`, and deploying to an AWS EC2 Ubuntu instance. | Completed |
-| **02** | **Nginx Reverse Proxy for Next.js on EC2** | `Nginx`, `Docker`, `AWS EC2`, `Ubuntu`, `Reverse Proxy` | Setting up Nginx alongside the containerized Next.js app on AWS EC2 to act as a reverse proxy, handling standard HTTP/HTTPS traffic routing, port forwarding, and proxy headers. | Up Next |
+| **02** | [**Nginx Reverse Proxy for Next.js**](./02-nginx-reverse-proxy/) | `Nginx`, `Docker Compose`, `Docker`, `AWS EC2`, `Ubuntu` | Multi-container orchestration with Docker Compose, configuring Nginx as a reverse proxy to route standard HTTP (port 80) traffic to an isolated Next.js container (port 3000). | Completed |
 
 ---
 
@@ -30,7 +30,8 @@ Every lab is organized into its own self-contained directory containing:
 home-labs/
 ├── LICENSE                      # MIT License
 ├── README.md                    # Root index & homelab roadmap
-└── 01-containerized-nextapp/    # Lab 01: Dockerized Next.js on AWS EC2
+├── 01-containerized-nextapp/    # Lab 01: Dockerized Next.js on AWS EC2
+└── 02-nginx-reverse-proxy/      # Lab 02: Nginx reverse proxy with Docker Compose
 ```
 
 ---
@@ -38,7 +39,7 @@ home-labs/
 ## 🛠️ Core Technologies & Tooling
 
 - **Operating Systems**: Ubuntu Linux (Server LTS), Debian
-- **Containers & Runtimes**: Docker Engine, Docker Buildx, Bun, Node.js
+- **Containers & Runtimes**: Docker Engine, Docker Compose, Docker Buildx, Bun, Node.js
 - **Web Servers & Proxies**: Nginx
 - **Cloud & Infrastructure**: AWS (EC2, VPC, Security Groups)
 - **Frameworks & Languages**: Next.js (App Router), TypeScript, React, Bash / Shell scripting

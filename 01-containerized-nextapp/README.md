@@ -324,3 +324,11 @@ You will see the live **Homelab Status** dashboard reporting real-time server he
 - **Runtime Environment Injection**: Excluding `.env*` files in `.dockerignore` is best security practice to avoid leaking secrets in image layers. Injecting variables at runtime via `-e` or `--env-file` ensures the image remains environment-agnostic and configurable across staging or production.
 - **Reproducible Scripting**: Utilizing an idempotent setup script like `install-docker.sh` eliminates manual host configuration errors and standardizes new VM provisioning.
 - **Security Group Essentials**: Cloud firewalls operate independently of host firewalls (`ufw`/`iptables`); ensuring the cloud provider's ingress rules match the container host port mapping is critical for accessibility.
+
+---
+
+## Navigation & Next Steps
+
+- ➡️ **Next Lab**: [Lab 02: Nginx Reverse Proxy with Docker Compose](../02-nginx-reverse-proxy/README.md) — Learn how to place an Nginx reverse proxy in front of this containerized Next.js app using Docker Compose, isolating port 3000 from the public internet and serving traffic seamlessly over standard HTTP port 80.
+- 🏠 **Home**: [Home Labs Overview](../README.md)
+
