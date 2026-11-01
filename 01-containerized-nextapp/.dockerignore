@@ -1,5 +1,7 @@
-# Build files
+# Next.js build artifacts
 .next/
+
+# Dependency cache
 node_modules/
 
 # Secrets
@@ -12,3 +14,4 @@ README.md
 *.log
 .DS_Store
 .vscode/
+install-docker.sh
