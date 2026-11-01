@@ -249,7 +249,6 @@ docker run -d \
   -p 3000:3000 \
   -e APP_ENV=production \
   -e APP_VERSION=1.0.0 \
-  -e APP_RUNTIME=Bun \
   homelab-next:v1
 ```
 
@@ -260,7 +259,6 @@ docker run -d \
 - `-p 3000:3000`: Maps port `3000` on the EC2 host to port `3000` inside the container.
 - `-e APP_ENV=production`: Injects the environment variable so the dashboard reflects `Production`.
 - `-e APP_VERSION=1.0.0`: Injects the application version.
-- `-e APP_RUNTIME=Bun`: Injects runtime metadata.
 - `homelab-next:v1`: The target image and version tag to instantiate.
 
 #### 3. Verify Container Status & Logs
