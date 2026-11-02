@@ -20,7 +20,7 @@ Every lab is organized into its own self-contained directory containing:
 | # | Lab | Core Technologies | Description | Status |
 | :---: | :--- | :--- | :--- | :---: |
 | **01** | [**Containerized Next.js App**](./01-containerized-nextapp/) | `Docker`, `Bun`, `Next.js`, `AWS EC2`, `Ubuntu`, `Bash` | Deep dive into Docker architecture, multi-stage caching with Bun & Next.js standalone output, automated host provisioning with `install-docker.sh`, and deploying to an AWS EC2 Ubuntu instance. | Completed |
-| **02** | [**Nginx Reverse Proxy for Next.js**](./02-nginx-reverse-proxy/) | `Nginx`, `Docker Compose`, `Docker`, `AWS EC2`, `Ubuntu` | Multi-container orchestration with Docker Compose, configuring Nginx as a reverse proxy to route standard HTTP (port 80) traffic to an isolated Next.js container (port 3000). | Completed |
+| **02** | [**Nginx Reverse Proxy with Docker Compose**](./02-nginx-reverse-proxy/) | `Nginx`, `Docker Compose`, `Docker`, `AWS EC2`, `Ubuntu` | Multi-container orchestration with Docker Compose, configuring Nginx as a reverse proxy to route standard HTTP (port 80) traffic to an isolated Next.js container (port 3000). | Completed |
 
 ---
 
