@@ -1,0 +1,2 @@
+# exclude certificates
+certbot/conf/
