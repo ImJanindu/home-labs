@@ -1,2 +1,5 @@
-# exclude certificates
+# Let's Encrypt certificate data and private keys
 certbot/conf/
+
+# Temporary ACME challenge files
+certbot/www/
