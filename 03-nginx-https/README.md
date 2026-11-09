@@ -94,28 +94,16 @@ The initial configuration is used **only once** to obtain the initial certificat
 
 ### 3. Shared Bind Mount Architecture
 
-Nginx and Certbot coordinate through two shared directories on the EC2 host:
+Rather than packaging certificates directly inside container images or running Certbot as a permanent daemon, Nginx and Certbot communicate by sharing two directories directly on the EC2 host using Docker bind mounts:
 
-```text
-┌──────────────────────┐                           ┌──────────────────────┐
-│  Certbot Container   │                           │   Nginx Container    │
-│                      │                           │                      │
-│   /var/www/certbot   │──[ Read-Write Mount ]──┐  │   /var/www/certbot   │──[ Read-Only Mount ]──┐
-│   (Writes challenges)│                        │  │   (Serves challenges)│                       │
-│                      │                        │  │                      │                       │
-│   /etc/letsencrypt   │──[ Read-Write Mount ]─┐│  │   /etc/letsencrypt   │──[ Read-Only Mount ]─┐│
-│  (Saves certs & keys)│                       ││  │   (Reads certs)      │                      ││
-└──────────────────────┘                       ││  └──────────────────────┘                      ││
-                                               ▼▼                                                ▼▼
-                              ┌──────────────────────────────────┐
-                              │         EC2 Host Storage         │
-                              │  ./certbot/www  (Webroot tokens) │
-                              │  ./certbot/conf (Keys & certs)   │
-                              └──────────────────────────────────┘
-```
+1. **ACME Challenge Webroot (`./certbot/www` ⮂ `/var/www/certbot`)**:
+   - **Certbot (Read-Write)**: During the HTTP-01 challenge, Certbot generates a temporary validation token and writes it to `/var/www/certbot/.well-known/acme-challenge/` inside its container, which instantly reflects in `./certbot/www` on the host.
+   - **Nginx (Read-Only `:ro`)**: Nginx mounts the same host directory and serves any request hitting `/.well-known/acme-challenge/*` over HTTP port 80. This allows Let's Encrypt to verify domain ownership without giving Nginx write permissions to the webroot.
 
-- **Challenge Webroot (`./certbot/www`)**: Certbot drops temporary validation tokens into `/var/www/certbot/.well-known/acme-challenge/`. Nginx reads and serves these over HTTP port 80 to prove domain ownership.
-- **Certificate Store (`./certbot/conf`)**: When validated, Let's Encrypt writes the certificate bundle and private key into `/etc/letsencrypt/`. Nginx reads them with `:ro` (read-only) permissions to encrypt connections.
+2. **Certificate Storage (`./certbot/conf` ⮂ `/etc/letsencrypt`)**:
+   - **Certbot (Read-Write)**: Once domain validation succeeds, Let's Encrypt issues the certificate bundle (`fullchain.pem`) and private key (`privkey.pem`), which Certbot stores in `/etc/letsencrypt/`, persisting them directly onto the host filesystem at `./certbot/conf/`.
+   - **Nginx (Read-Only `:ro`)**: Nginx mounts `./certbot/conf` as `/etc/letsencrypt:ro` to load the public certificates and private keys required to terminate TLS on port 443. The read-only constraint ensures that even if Nginx is compromised, the stored cryptographic keys cannot be deleted or modified.
+
 
 ---
 
