@@ -63,10 +63,10 @@ The initial configuration is used **only once** to obtain the initial certificat
 ```text
 [ Web Browser / Client ]
            │
-           │ 1. DNS Resolution (nginx-https-web.duckdns.org ──► EC2 Public IP)
+           │ 1. DNS Resolution (<your-domain>.duckdns.org ──► EC2 Public IP)
            ▼
 ┌────────────────────────────────────────────────────────────────────────┐
-│ AWS EC2 Instance (Security Group: Ports 22, 80, 443 Open)             │
+│ AWS EC2 Instance (Security Group: Ports 22, 80, 443 Open)              │
 │                                                                        │
 │   HTTP :80 (Redirect / ACME)                    HTTPS :443 (Secure)    │
 │       │                                              │                 │
@@ -77,7 +77,7 @@ The initial configuration is used **only once** to obtain the initial certificat
 │ │  Port 80 Location:                      Port 443 Location:       │   │
 │ │  ├── /.well-known/acme-challenge/       ├── TLS Termination      │   │
 │ │  │   (Serves Certbot validation)        ├── Proxy Pass           │   │
-│ │  └── / (301 Redirect to HTTPS)          │   (http://next-app:3000│   │
+│ │  └── / (301 Redirect to HTTPS)          │   (http://next-app:3000)│  │
 │ └─────────────────────────┬──────────────────────────┬─────────────┘   │
 │                           │                          │                 │
 │      Shared Host Volume   │                          │ Docker Internal │
@@ -104,13 +104,13 @@ Nginx and Certbot coordinate through two shared directories on the EC2 host:
 │   (Writes challenges)│                        │  │   (Serves challenges)│                       │
 │                      │                        │  │                      │                       │
 │   /etc/letsencrypt   │──[ Read-Write Mount ]─┐│  │   /etc/letsencrypt   │──[ Read-Only Mount ]─┐│
-│   (Saves certs & keys│                       ││  │   (Reads certs)      │                      ││
+│  (Saves certs & keys)│                       ││  │   (Reads certs)      │                      ││
 └──────────────────────┘                       ││  └──────────────────────┘                      ││
                                                ▼▼                                                ▼▼
                               ┌──────────────────────────────────┐
                               │         EC2 Host Storage         │
-                              │  ./certbot/www   (Webroot tokens)│
-                              │  ./certbot/conf  (Keys & certs)  │
+                              │  ./certbot/www  (Webroot tokens) │
+                              │  ./certbot/conf (Keys & certs)   │
                               └──────────────────────────────────┘
 ```
 
@@ -202,7 +202,7 @@ server {
     listen 80;
     listen [::]:80;
 
-    server_name nginx-https-web.duckdns.org;
+    server_name <your-domain>.duckdns.org;
 
     location /.well-known/acme-challenge/ {
         root /var/www/certbot;
@@ -221,6 +221,7 @@ server {
 ```
 
 - **`listen 80;` & `listen [::]:80;`**: Listens for HTTP requests on IPv4 and IPv6.
+- **`server_name <your-domain>.duckdns.org;`**: Matches requests for your configured DuckDNS subdomain.
 - **`location /.well-known/acme-challenge/`**: Maps ACME challenge requests directly to `/var/www/certbot` where Certbot deposits verification files.
 - **`location /`**: Proxies general traffic to Next.js so the app is accessible while certificates are prepared.
 
@@ -235,7 +236,7 @@ server {
     listen 80;
     listen [::]:80;
 
-    server_name nginx-https-web.duckdns.org;
+    server_name <your-domain>.duckdns.org;
 
     location /.well-known/acme-challenge/ {
         root /var/www/certbot;
@@ -250,10 +251,10 @@ server {
     listen 443 ssl;
     listen [::]:443 ssl;
 
-    server_name nginx-https-web.duckdns.org;
+    server_name <your-domain>.duckdns.org;
 
-    ssl_certificate /etc/letsencrypt/live/nginx-https-web.duckdns.org/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/nginx-https-web.duckdns.org/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/<your-domain>.duckdns.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/<your-domain>.duckdns.org/privkey.pem;
 
     ssl_protocols TLSv1.2 TLSv1.3;
 
@@ -288,212 +289,226 @@ server {
 
 ### Step 1: Configure DuckDNS Domain
 
-1. Log in to [DuckDNS](https://www.duckdns.org/) using GitHub or another auth provider.
-2. In the **Domains** section, create a new subdomain (for example: `nginx-https-web`).
-3. Set the target IP address to your **AWS EC2 Public IPv4 Address** and click **update ip**.
-4. Test DNS resolution from your terminal:
+[DuckDNS](https://www.duckdns.org/) is a free dynamic DNS service that maps human-readable domain names (`<your-domain>.duckdns.org`) to changing or static public IP addresses.
+
+#### How to Create and Configure Your Subdomain:
+1. Navigate to [DuckDNS](https://www.duckdns.org/) and log in using an account provider (such as GitHub, Google, or Reddit).
+2. Under the **Domains** section on your account dashboard:
+   - Type your desired subdomain name into the input field (e.g., enter `my-homelab` to get `my-homelab.duckdns.org`). In this guide, we use `<your-domain>` as the placeholder.
+   - Click the **add domain** button.
+3. In the **current ip** field next to your newly created domain, enter your **AWS EC2 Public IPv4 Address**.
+4. Click the **update ip** button to point the domain to your EC2 instance.
+5. Verify DNS propagation and resolution from your terminal:
    ```bash
-   dig +short nginx-https-web.duckdns.org
+   dig +short <your-domain>.duckdns.org
    ```
-   *The returned IP must match your EC2 public IPv4 address.*
+   *The returned IP must match your EC2 instance's public IPv4 address.*
 
 > [!IMPORTANT]
-> If your EC2 instance does not use an AWS Elastic IP, its public IP will change upon stopping and restarting the VM. Remember to update DuckDNS if your IP changes!
+> If your EC2 instance does not use an AWS Elastic IP, its public IP changes every time you stop and restart the VM. Whenever your EC2 instance restarts with a new public IP, log in to DuckDNS and update the domain's target IP to match the new address.
 
 ---
 
 ### Step 2: Configure AWS EC2 Security Group
 
-Update your EC2 Security Group inbound rules to allow both HTTP and HTTPS:
+1. Open the **AWS EC2 Console** -> **Instances** -> Select your running instance.
+2. In the details pane, navigate to the **Security** tab and click on the associated **Security Group ID**.
+3. Under **Inbound Rules**, click **Edit inbound rules** and ensure the following rules are configured:
 
-| Type | Protocol | Port Range | Source | Purpose |
-| :--- | :---: | :---: | :---: | :--- |
-| **SSH** | TCP | `22` | `My IP` (`<your-ip>/32`) | Secure server administration |
-| **HTTP** | TCP | `80` | `0.0.0.0/0` | ACME challenge validation & HTTPS redirect |
-| **HTTPS** | TCP | `443` | `0.0.0.0/0` | Secure public web traffic |
+   | Type | Protocol | Port Range | Source | Purpose |
+   | :--- | :---: | :---: | :---: | :--- |
+   | **SSH** | TCP | `22` | `My IP` (`<your-ip>/32`) | Secure server administration |
+   | **HTTP** | TCP | `80` | `0.0.0.0/0` | ACME challenge validation & HTTPS redirect |
+   | **HTTPS** | TCP | `443` | `0.0.0.0/0` | Secure public web traffic |
 
-*(Ensure custom TCP port 3000 is closed to the internet).*
+4. Click **Save rules**. *(Ensure port 3000 is not exposed to the public internet).*
 
 ---
 
 ### Step 3: Stop Previous Lab & Prepare Directory
 
-Ensure port 80 is not occupied by Lab 02:
-
-```bash
-# Stop Lab 02 if running
-cd ~/home-labs/02-nginx-reverse-proxy
-docker compose down
-
-# Navigate to Lab 03
-cd ~/home-labs/03-nginx-https
-
-# Verify ports 80 and 443 are free
-sudo ss -lntp | grep -E ':(80|443)\b'
-```
+1. Stop Lab 02 if it is currently running to free host port 80:
+   ```bash
+   cd ~/home-labs/02-nginx-reverse-proxy
+   docker compose down
+   ```
+2. Navigate to the Lab 03 workspace:
+   ```bash
+   cd ~/home-labs/03-nginx-https
+   ```
+3. Verify that ports 80 and 443 are not in use:
+   ```bash
+   sudo ss -lntp | grep -E ':(80|443)\b'
+   ```
 
 ---
 
 ### Step 4: Create Certbot Directories & Set Permissions
 
-Create the persistent host directories mapped to container volumes:
-
-```bash
-mkdir -p certbot/www/.well-known/acme-challenge
-mkdir -p certbot/conf
-
-# Ensure current user owns the directories
-sudo chown -R "$USER":"$USER" certbot
-```
+1. Create the persistent host directories mapped to container volumes:
+   ```bash
+   mkdir -p certbot/www/.well-known/acme-challenge
+   mkdir -p certbot/conf
+   ```
+2. Set ownership of the directory to the current user to prevent permission issues:
+   ```bash
+   sudo chown -R "$USER":"$USER" certbot
+   ```
 
 ---
 
-### Step 5: Start Initial HTTP Stack & Verify ACME Routing
+### Step 5: Start Initial HTTP Stack
 
-Before requesting a certificate, start Nginx in HTTP-only mode using `initial-http.conf`.
-
-1. Ensure `compose.yaml` mounts `initial-http.conf`:
+1. Verify declared services in the Compose stack:
+   ```bash
+   docker compose config --services
+   ```
+2. Ensure [`compose.yaml`](./compose.yaml) initially mounts `initial-http.conf`:
    ```yaml
    volumes:
      - ./nginx/initial-http.conf:/etc/nginx/conf.d/default.conf:ro
    ```
-
-2. Start the persistent services:
+3. Build and launch `next-app` and `nginx` in detached mode:
    ```bash
    docker compose up -d --build next-app nginx
    ```
-
-3. Verify Nginx syntax and test HTTP connectivity:
+4. Verify container status and Nginx configuration syntax:
    ```bash
+   docker compose ps
    docker compose exec nginx nginx -t
-   curl -I http://nginx-https-web.duckdns.org
+   ```
+5. Test standard HTTP connectivity:
+   ```bash
+   curl -I http://<your-domain>.duckdns.org
    ```
 
-4. **Sanity Check: Test ACME Challenge Path**:
-   Deposit a dummy file in the host webroot and test retrieval through the public domain:
+---
+
+### Step 6: Test ACME Challenge Path
+
+1. Create a dummy challenge verification file on the host:
    ```bash
    echo "acme-test-ok" > certbot/www/.well-known/acme-challenge/test-file
-   curl http://nginx-https-web.duckdns.org/.well-known/acme-challenge/test-file
    ```
-   *Expected output: `acme-test-ok`.* Once confirmed, delete the test file:
+2. Verify that the Nginx container can access the file through the bind mount:
+   ```bash
+   docker compose exec nginx cat /var/www/certbot/.well-known/acme-challenge/test-file
+   ```
+3. Test public HTTP access to the challenge file through DuckDNS:
+   ```bash
+   curl http://<your-domain>.duckdns.org/.well-known/acme-challenge/test-file
+   ```
+   *Expected output: `acme-test-ok`.*
+4. Clean up the temporary test file:
    ```bash
    rm certbot/www/.well-known/acme-challenge/test-file
    ```
 
 ---
 
-### Step 6: Request Let's Encrypt Certificate via Certbot
+### Step 7: Request Let's Encrypt Certificate via Certbot
 
-Run the Certbot container as a one-off command to perform the HTTP-01 challenge:
+1. Run the Certbot container as a temporary one-off service to execute the ACME HTTP-01 challenge:
+   ```bash
+   docker compose run --rm certbot certonly \
+     --webroot \
+     --webroot-path /var/www/certbot \
+     --email your-email@example.com \
+     --agree-tos \
+     --no-eff-email \
+     -d <your-domain>.duckdns.org
+   ```
+   **Flag breakdown:**
+   - `run --rm`: Runs the command in a new container and automatically removes it when complete.
+   - `certonly`: Requests the certificate without attempting to configure Nginx automatically.
+   - `--webroot -w /var/www/certbot`: Uses webroot verification mode, depositing challenge tokens in the shared volume.
+   - `-d <your-domain>.duckdns.org`: Defines your custom DuckDNS domain name.
 
-```bash
-docker compose run --rm certbot certonly \
-  --webroot \
-  --webroot-path /var/www/certbot \
-  --email your-email@example.com \
-  --agree-tos \
-  --no-eff-email \
-  -d nginx-https-web.duckdns.org
-```
-
-**Flag breakdown:**
-- `run --rm`: Starts the container, runs the command, and automatically removes the container when finished.
-- `certonly`: Generates the certificate without altering web server configurations directly.
-- `--webroot -w /var/www/certbot`: Specifies webroot verification mode and target path.
-- `-d nginx-https-web.duckdns.org`: Defines your domain.
-
-Upon success, Certbot outputs:
-```text
-Successfully received certificate.
-Certificate is saved at: /etc/letsencrypt/live/nginx-https-web.duckdns.org/fullchain.pem
-Key is saved at:         /etc/letsencrypt/live/nginx-https-web.duckdns.org/privkey.pem
-```
-
-Verify that the certificates exist on the EC2 host:
-```bash
-sudo ls -la certbot/conf/live/nginx-https-web.duckdns.org/
-```
+2. Verify that the certificate and private key files were created on the EC2 host:
+   ```bash
+   sudo ls -la certbot/conf/live/<your-domain>.duckdns.org/
+   ```
+   *Expected files: `cert.pem`, `chain.pem`, `fullchain.pem`, and `privkey.pem`.*
 
 ---
 
-### Step 7: Transition to Production HTTPS Configuration
+### Step 8: Switch from HTTP Mode to HTTPS Mode
 
-1. In [`compose.yaml`](./compose.yaml), update the Nginx volume mount to load [`nginx/https.conf`](./nginx/https.conf):
+1. Update the Nginx volume mount in [`compose.yaml`](./compose.yaml) to load [`nginx/https.conf`](./nginx/https.conf):
    ```yaml
    volumes:
      - ./nginx/https.conf:/etc/nginx/conf.d/default.conf:ro
      - ./certbot/www:/var/www/certbot:ro
      - ./certbot/conf:/etc/letsencrypt:ro
    ```
-
-2. Recreate the Nginx container to apply the volume change:
+2. Recreate the Nginx container to apply the updated configuration mount:
    ```bash
    docker compose up -d --force-recreate nginx
    ```
-
-3. Verify configuration syntax and check running status:
+3. Test the active configuration syntax:
    ```bash
    docker compose exec nginx nginx -t
-   docker compose ps
    ```
 
 ---
 
-### Step 8: Verify HTTPS & HTTP Redirection
+### Step 9: Test HTTPS & HTTP Redirection
 
-1. **Verify HTTP to HTTPS 301 Redirect**:
+1. Test the automatic HTTP to HTTPS 301 permanent redirect:
    ```bash
-   curl -I http://nginx-https-web.duckdns.org
+   curl -I http://<your-domain>.duckdns.org
    ```
-   *Output should show:*
+   *Expected output:*
    ```text
    HTTP/1.1 301 Moved Permanently
-   Location: https://nginx-https-web.duckdns.org/
+   Location: https://<your-domain>.duckdns.org/
    ```
-
-2. **Verify Secure HTTPS Endpoint**:
+2. Test the secure HTTPS endpoint:
    ```bash
-   curl -I https://nginx-https-web.duckdns.org
+   curl -I https://<your-domain>.duckdns.org
    ```
-   *Output should return `HTTP/1.1 200 OK`.*
-
-3. **Inspect the TLS Certificate**:
+   *Expected output: `HTTP/1.1 200 OK`.*
+3. Inspect the remote TLS certificate details:
    ```bash
-   openssl s_client -connect nginx-https-web.duckdns.org:443 -servername nginx-https-web.duckdns.org </dev/null 2>/dev/null | openssl x509 -noout -issuer -dates
+   openssl s_client -connect <your-domain>.duckdns.org:443 -servername <your-domain>.duckdns.org </dev/null 2>/dev/null | openssl x509 -noout -issuer -dates
    ```
-
-4. **Browser Verification**: Open `https://nginx-https-web.duckdns.org` in your browser. Confirm the padlock icon indicates a trusted connection verified by Let's Encrypt!
+4. Verify in a web browser: Navigate to `https://<your-domain>.duckdns.org` and confirm that the padlock icon indicates a trusted connection verified by Let's Encrypt.
 
 ---
 
-### Step 9: Certificate Renewal Testing & Automation
+### Step 10: Test Certificate Renewal
 
-Let's Encrypt certificates expire after **90 days**. Certbot recommends checking for renewal twice daily.
+1. Perform a renewal simulation (dry run) with Certbot:
+   ```bash
+   docker compose run --rm certbot renew --dry-run
+   ```
+   *A successful dry run confirms that the ACME challenge path remains accessible through `https.conf`.*
+2. Test reloading the Nginx configuration without stopping the container:
+   ```bash
+   docker compose exec nginx nginx -s reload
+   ```
 
-#### 1. Dry Run Test
-Verify that renewal works without replacing existing certificates:
-```bash
-docker compose run --rm certbot renew --dry-run
-```
-*A successful test validates that the ACME challenge path remains accessible through `https.conf`.*
+---
 
-#### 2. Automating with Cron
-Create a system cron job to check renewals daily at 03:00 AM and reload Nginx when renewed:
+### Step 11: Automate Certificate Renewal with Cron
 
-```bash
-sudo nano /etc/cron.d/homelab-certbot
-```
-
-Add the following single-line entry:
-```cron
-0 3 * * * ubuntu cd /home/ubuntu/home-labs/03-nginx-https && /usr/bin/docker compose run --rm certbot renew --quiet && /usr/bin/docker compose exec -T nginx nginx -s reload >> /var/log/homelab-certbot.log 2>&1
-```
-
-Set file permissions and restart the cron daemon:
-```bash
-sudo chmod 644 /etc/cron.d/homelab-certbot
-sudo systemctl restart cron
-```
+1. Create a system cron job file on the EC2 host:
+   ```bash
+   sudo nano /etc/cron.d/homelab-certbot
+   ```
+2. Add the scheduled daily renewal check and Nginx reload command:
+   ```cron
+   0 3 * * * ubuntu cd /home/ubuntu/home-labs/03-nginx-https && /usr/bin/docker compose run --rm certbot renew --quiet && /usr/bin/docker compose exec -T nginx nginx -s reload >> /var/log/homelab-certbot.log 2>&1
+   ```
+3. Set appropriate permissions and restart the cron service:
+   ```bash
+   sudo chmod 644 /etc/cron.d/homelab-certbot
+   sudo systemctl restart cron
+   ```
+4. Verify that the cron daemon is active and running:
+   ```bash
+   sudo systemctl status cron --no-pager
+   ```
 
 ---
 
@@ -534,7 +549,7 @@ Always verify with `git status` before committing changes to ensure no sensitive
 ### 1. Nginx Fails to Start After Switching to `https.conf`
 - **Cause**: Nginx cannot find certificate files defined in `ssl_certificate` / `ssl_certificate_key`.
 - **Resolution**:
-  - Run `sudo ls -la certbot/conf/live/nginx-https-web.duckdns.org/` to verify files exist.
+  - Run `sudo ls -la certbot/conf/live/<your-domain>.duckdns.org/` to verify files exist.
   - Verify that the volume mount in `compose.yaml` maps `./certbot/conf:/etc/letsencrypt:ro`.
   - Check Nginx startup logs: `docker compose logs --tail=50 nginx`.
 
@@ -545,10 +560,10 @@ Always verify with `git status` before committing changes to ensure no sensitive
   docker compose exec nginx cat /var/www/certbot/.well-known/acme-challenge/test-file
   ```
 
-### 3. Certbot Reports "Unauthorized / Could not connect"
+### 3. Certbot Reports "Unauthorized / Could Not Connect"
 - **Cause**: DNS resolution failed or inbound port 80 is blocked.
 - **Resolution**:
-  - Confirm DuckDNS points to the current EC2 IP: `dig +short nginx-https-web.duckdns.org`.
+  - Confirm DuckDNS points to the current EC2 IP: `dig +short <your-domain>.duckdns.org`.
   - Confirm AWS Security Group allows inbound TCP traffic on port `80` from `0.0.0.0/0`.
 
 ### 4. Browser Connection Times Out on HTTPS (`443`)
@@ -556,6 +571,15 @@ Always verify with `git status` before committing changes to ensure no sensitive
 - **Resolution**:
   - Verify port 443 is published: `docker compose ps` (should show `0.0.0.0:443->443/tcp`).
   - Verify AWS EC2 Security Group contains an inbound rule for HTTPS (`443`) from `0.0.0.0/0`.
+
+### 5. Nginx Cannot Reach Next.js Container (`502 Bad Gateway`)
+- **Cause**: The `next-app` container is stopped or Nginx cannot resolve its service hostname.
+- **Resolution**:
+  - Check Next.js container status: `docker compose ps next-app`.
+  - Verify internal container connectivity from Nginx:
+    ```bash
+    docker compose exec nginx wget -qO- http://next-app:3000
+    ```
 
 ---
 
