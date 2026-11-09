@@ -21,6 +21,7 @@ Every lab is organized into its own self-contained directory containing:
 | :---: | :--- | :--- | :--- | :---: |
 | **01** | [**Containerized Next.js App**](./01-containerized-nextapp/) | `Docker`, `Bun`, `Next.js`, `AWS EC2`, `Ubuntu`, `Bash` | Deep dive into Docker architecture, multi-stage caching with Bun & Next.js standalone output, automated host provisioning with `install-docker.sh`, and deploying to an AWS EC2 Ubuntu instance. | Completed |
 | **02** | [**Nginx Reverse Proxy with Docker Compose**](./02-nginx-reverse-proxy/) | `Nginx`, `Docker Compose`, `Docker`, `AWS EC2`, `Ubuntu` | Multi-container orchestration with Docker Compose, configuring Nginx as a reverse proxy to route standard HTTP (port 80) traffic to an isolated Next.js container (port 3000). | Completed |
+| **03** | [**Nginx HTTPS with Certbot & DuckDNS**](./03-nginx-https/) | `Nginx`, `Certbot`, `Let's Encrypt`, `DuckDNS`, `Docker Compose`, `TLS/SSL` | Automating TLS/SSL encryption for Next.js with Let's Encrypt and Certbot on AWS EC2, resolving the two-stage ACME bootstrap, automatic HTTP-to-HTTPS 301 redirection, and cron renewal automation. | Completed |
 
 ---
 
@@ -31,7 +32,8 @@ home-labs/
 ├── LICENSE                      # MIT License
 ├── README.md                    # Root index & homelab roadmap
 ├── 01-containerized-nextapp/    # Lab 01: Dockerized Next.js on AWS EC2
-└── 02-nginx-reverse-proxy/      # Lab 02: Nginx reverse proxy with Docker Compose
+├── 02-nginx-reverse-proxy/      # Lab 02: Nginx reverse proxy with Docker Compose
+└── 03-nginx-https/              # Lab 03: Automated TLS/HTTPS with Certbot & DuckDNS
 ```
 
 ---
@@ -40,10 +42,11 @@ home-labs/
 
 - **Operating Systems**: Ubuntu Linux (Server LTS), Debian
 - **Containers & Runtimes**: Docker Engine, Docker Compose, Docker Buildx, Bun, Node.js
-- **Web Servers & Proxies**: Nginx
-- **Cloud & Infrastructure**: AWS (EC2, VPC, Security Groups)
+- **Web Servers, Proxies & Security**: Nginx, Certbot (Let's Encrypt), SSL/TLS Termination
+- **DNS & Networking**: DuckDNS, Dynamic DNS, AWS Security Groups
+- **Cloud & Infrastructure**: AWS (EC2, VPC)
 - **Frameworks & Languages**: Next.js (App Router), TypeScript, React, Bash / Shell scripting
-- **Automation & DevOps**: Git, GitHub Actions, systemd
+- **Automation & DevOps**: Git, GitHub Actions, systemd, cron
 
 ---
 

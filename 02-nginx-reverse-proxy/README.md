@@ -267,5 +267,6 @@ http://<EC2_PUBLIC_IP>
 ## Navigation
 
 - ⬅️ **Previous Lab**: [Lab 01: Containerized Next.js App on AWS EC2](../01-containerized-nextapp/README.md)
+- ➡️ **Next Lab**: [Lab 03: Nginx HTTPS with Certbot & DuckDNS](../03-nginx-https/README.md)
 - 🏠 **Home**: [Home Labs Overview](../README.md)
 
