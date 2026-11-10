@@ -298,6 +298,8 @@ http://<EC2_PUBLIC_IP>:3000
 
 You will see the live **Homelab Status** dashboard reporting real-time server health, environment details (`Production`), application version (`1.0.0`), runtime (`Bun`), and server timestamp directly served from the containerized application on your EC2 VM.
 
+![Lab 01 Next.js Application Screenshot](../assets/lab01.png)
+
 ---
 
 ## Useful Docker Commands Reference

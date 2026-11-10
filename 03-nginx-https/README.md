@@ -462,6 +462,8 @@ server {
    ```
 4. Verify in a web browser: Navigate to `https://<your-domain>.duckdns.org` and confirm that the padlock icon indicates a trusted connection verified by Let's Encrypt.
 
+   ![Lab 03 Nginx HTTPS Screenshot](../assets/lab03.png)
+
 ---
 
 ### Step 10: Test Certificate Renewal

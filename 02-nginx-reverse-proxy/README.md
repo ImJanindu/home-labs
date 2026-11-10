@@ -238,6 +238,8 @@ http://<EC2_PUBLIC_IP>
 > **No Port Needed!**  
 > Browsers automatically default to port `80` when navigating over `http://`. Nginx receives the connection on port 80 and immediately proxies it internally to `next-app:3000`. The Next.js dashboard renders seamlessly without exposing port 3000 to the public.
 
+![Lab 02 Nginx Reverse Proxy Screenshot](../assets/lab02.png)
+
 ---
 
 ## Useful Docker Compose Commands Reference
