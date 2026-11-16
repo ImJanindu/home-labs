@@ -71,7 +71,7 @@ export default function HomePage() {
       <div className="dashboard">
         <header className="page-header">
           <p className="eyebrow">Homelab dashboard</p>
-          <h1>Homelab Status</h1>
+          <h1>Homelab Status 2.0</h1>
           <p className="page-description">
             A quick overview of your homelab environment and server health.
           </p>
