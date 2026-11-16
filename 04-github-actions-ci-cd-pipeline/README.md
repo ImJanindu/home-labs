@@ -200,6 +200,52 @@ To avoid running the pipeline on trivial updates (like updating this README), Gi
 
 To completely pause deployments during heavy debugging, the workflow can be disabled entirely via the GitHub UI under the **Actions** tab by selecting the workflow and clicking **Disable workflow**.
 
+## Running Multiple Applications from the Same Repository
+
+The same repository can contain multiple Next.js applications and each application can have its own independent CI/CD workflow. In this lab, a second Next.js application was added inside `01-containerized-nextapp/second-web-app` and configured to run on port `3001`, while the original application continues to run on port `3000`.
+
+### Using Separate Container Image Names
+
+Each workflow publishes its application to a separate package in the GitHub Container Registry by adding an application-specific name to `IMAGE_NAME`:
+
+```yaml
+# First application
+IMAGE_NAME: ${{ github.repository }}/firstapp
+
+# Second application
+IMAGE_NAME: ${{ github.repository }}/secondapp
+```
+
+This keeps the images separate while using the same repository and allows each EC2 deployment to pull only the image belonging to its application.
+
+### Deploying Applications on Separate Ports
+
+Each application uses its own Compose configuration, container name, and host port:
+
+| Application | Container Image | Container Name | Host Port |
+| :--- | :--- | :--- | :---: |
+| First Next.js app | `ghcr.io/imjanindu/home-labs/firstapp:latest` | `next-app-1` | `3000` |
+| Second Next.js app | `ghcr.io/imjanindu/home-labs/secondapp:latest` | `next-app-2` | `3001` |
+
+Using distinct container names (`next-app-1` and `next-app-2`) prevents naming conflicts on the EC2 host. Both workflows can run in parallel because they build and publish separate container images, then deploy their corresponding application independently.
+
+### Limiting Workflow Triggers with `paths`
+
+The `paths` keyword limits workflow execution to changes in the application directory or its corresponding workflow file. This prevents unrelated repository changes from starting the deployment pipeline:
+
+```yaml
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '01-containerized-nextapp/**'
+      - '.github/workflows/lab01-nextapp-first.yml'
+```
+
+The second workflow uses the same approach with `.github/workflows/lab01-nextapp-second.yml`. This makes it possible to manage multiple applications in one repository while keeping their build, package, and deployment workflows organized independently.
+
+
 ## Lessons Learned & Key Takeaways
 
 * **Resource Optimization:** EC2 instances (especially `t2.micro` or `t3.micro`) can crash or run out of memory when building heavy Node.js/Bun applications. Offloading this to GitHub Actions keeps the server stable and dedicated strictly to serving traffic.
@@ -209,6 +255,12 @@ To completely pause deployments during heavy debugging, the workflow can be disa
 * **Image Visibility:** Setting the GHCR package visibility to "Public" allows the EC2 instance to pull the image seamlessly without requiring a Docker login step on the host machine.
 
 * **Pipeline Phasing:** Separating the pipeline into independent `build` and `deploy` jobs provides clearer logs, easier troubleshooting, and the ability to strictly enforce that deployments only happen if compilation succeeds.
+
+* **Multiple Applications in One Repository:** Separate workflows can build and deploy multiple Next.js applications in parallel while keeping each application's source path, container image, and deployment configuration organized independently.
+
+* **Unique Image and Container Names:** Adding names such as `${{ github.repository }}/firstapp` and `${{ github.repository }}/secondapp`, together with Compose container names `next-app-1` and `next-app-2`, prevents conflicts between applications.
+
+* **Targeted Workflow Triggers:** Using the `paths` keyword ensures that workflows run only when the relevant application files or workflow configuration changes, avoiding unnecessary builds and deployments.
 
 ## Navigation & Next Steps
 

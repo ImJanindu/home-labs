@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - '01-containerized-nextapp/**' # Only run if something inside this folder changes
-      - '.github/workflows/lab01-nextapp-firstapp.yml' # Or if the workflow file itself changes
+      - '.github/workflows/lab01-nextapp-first.yml' # Or if the workflow file itself changes
 
 env:
   REGISTRY: ghcr.io

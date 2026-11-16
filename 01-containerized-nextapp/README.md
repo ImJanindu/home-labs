@@ -331,6 +331,14 @@ You will see the live **Homelab Status** dashboard reporting real-time server he
 
 > **Note:** `compose.yaml` is not required for Lab 01. It was added later to support the Lab 04 CI/CD workflow and EC2 deployment using the pre-built image from GHCR.
 
+## Additional Next.js Application for CI/CD Practice
+
+An additional Next.js website was added under `01-containerized-nextapp/second-web-app` to try out multiple GitHub Actions CI/CD workflows in the same repository. The original website runs on port `3000`, while the additional website runs on port `3001`.
+
+In a production project, placing one website inside another website's source directory is not a good practice. Because the second website is inside the main application's Docker build context, the main website can copy the second website's files during the build stage.
+
+This layout was intentionally used in the Home Labs repository to keep both related applications inside the same lab, simplify repository maintenance, and make the multi-workflow CI/CD learning setup easier to follow.
+
 ---
 
 ## Navigation & Next Steps
