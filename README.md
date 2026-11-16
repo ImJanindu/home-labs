@@ -22,6 +22,7 @@ Every lab is organized into its own self-contained directory containing:
 | **01** | [**Containerized Next.js App**](./01-containerized-nextapp/) | `Docker`, `Bun`, `Next.js`, `AWS EC2`, `Ubuntu`, `Bash` | Deep dive into Docker architecture, multi-stage caching with Bun & Next.js standalone output, automated host provisioning with `install-docker.sh`, and deploying to an AWS EC2 Ubuntu instance. | Completed |
 | **02** | [**Nginx Reverse Proxy with Docker Compose**](./02-nginx-reverse-proxy/) | `Nginx`, `Docker Compose`, `Docker`, `AWS EC2`, `Ubuntu` | Multi-container orchestration with Docker Compose, configuring Nginx as a reverse proxy to route standard HTTP (port 80) traffic to an isolated Next.js container (port 3000). | Completed |
 | **03** | [**Nginx HTTPS with Certbot & DuckDNS**](./03-nginx-https/) | `Nginx`, `Certbot`, `Let's Encrypt`, `DuckDNS`, `Docker Compose`, `TLS/SSL` | Automating TLS/SSL encryption for Next.js with Let's Encrypt and Certbot on AWS EC2, resolving the two-stage ACME bootstrap, automatic HTTP-to-HTTPS 301 redirection, and cron renewal automation. | Completed |
+| **04** | [**Automated CI/CD Pipeline with GitHub Actions**](./04-github-actions-ci-cd-pipeline/) | `GitHub Actions`, `Docker`, `GHCR`, `AWS EC2`, `Docker Compose` | Automating Docker image builds, publishing images to the GitHub Container Registry, and deploying updates to AWS EC2 with GitHub Actions. | Completed |
 
 ---
 
