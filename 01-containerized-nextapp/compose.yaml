@@ -1,6 +1,6 @@
 services:
   next-app:
-    image: ghcr.io/imjanindu/home-labs:latest
+    image: ghcr.io/imjanindu/home-labs/firstapp:latest
     container_name: next-app
     ports:
       - "3000:3000"
