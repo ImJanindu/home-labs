@@ -1,0 +1,7 @@
+services:
+  next-app:
+    image: ghcr.io/imjanindu/home-labs:latest
+    container_name: next-app
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
