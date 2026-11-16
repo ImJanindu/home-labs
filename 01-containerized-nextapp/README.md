@@ -18,7 +18,7 @@ The goal of this lab was to move beyond basic container commands and master prod
 ## Key Architecture & Concepts
 
 ### 1. Docker Under the Hood
-Docker is not a virtual machine—it utilizes Linux kernel features (namespaces for isolation and cgroups for resource constraints) to run isolated processes:
+Docker is not a virtual machine. It utilizes Linux kernel features (namespaces for isolation and cgroups for resource constraints) to run isolated processes:
 - **Docker Client & Daemon**: The Docker CLI communicates with the background `dockerd` service over a Unix socket or REST API.
 - **Layer Immutability & Caching**: Each instruction in a Dockerfile creates a read-only layer. Docker reuses cached layers if preceding instructions and copied file hashes remain unchanged.
 - **Why file order matters**: Placing frequently changing files (like application source code) after infrequently changing files (like dependency manifests) prevents cache busts on every build.
