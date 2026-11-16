@@ -325,7 +325,11 @@ You will see the live **Homelab Status** dashboard reporting real-time server he
 - **Standalone Mode Impact**: Copying `.next/standalone` produces a drastically smaller image footprint compared to copying the full workspace or `node_modules`.
 - **Runtime Environment Injection**: Excluding `.env*` files in `.dockerignore` is best security practice to avoid leaking secrets in image layers. Injecting variables at runtime via `-e` or `--env-file` ensures the image remains environment-agnostic and configurable across staging or production.
 - **Reproducible Scripting**: Utilizing an idempotent setup script like `install-docker.sh` eliminates manual host configuration errors and standardizes new VM provisioning.
-- **Security Group Essentials**: Cloud firewalls operate independently of host firewalls (`ufw`/`iptables`); ensuring the cloud provider's ingress rules match the container host port mapping is critical for accessibility.
+- **Security Group Essentials**: Cloud firewalls operate independently of host firewalls (`ufw`/`iptables`); ensuring the cloud provider's ingress rules match the container host port mapping is critical for accessibility. 
+
+&nbsp;
+
+> **Note:** `compose.yaml` is not required for Lab 01. It was added later to support the Lab 04 CI/CD workflow and EC2 deployment using the pre-built image from GHCR.
 
 ---
 
