@@ -1,13 +1,16 @@
-name: Build and Push Next.js Image
+name: Build and Push Next.js Image (second app)
 
 on:
   push:
     branches:
       - main
+    paths:
+      - '01-containerized-nextapp/**' # Only run if something inside this folder changes
+      - '.github/workflows/lab01-nextapp-second.yml' # Or if the workflow file itself changes
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository }}/secondapp
 
 jobs:
   build:
@@ -38,7 +41,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./01-containerized-nextapp
+          context: ./01-containerized-nextapp/second-web-app/homelabs-workflow-webapp
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -55,6 +58,6 @@ jobs:
           script: |
             cd /home/ubuntu/home-labs
             git pull origin main
-            cd 01-containerized-nextapp
+            cd 01-containerized-nextapp/second-web-app/homelabs-workflow-webapp
             docker compose pull
             docker compose up -d
