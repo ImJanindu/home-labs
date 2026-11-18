@@ -1,0 +1,9 @@
+services:
+  next-app-secrets:
+    image: ghcr.io/imjanindu/home-labs/env-secrets-lab:latest
+    container_name: next-app-secrets
+    ports:
+      - "3002:3000"
+    restart: unless-stopped
+    env_file:
+      - .env.production
