@@ -23,6 +23,7 @@ Every lab is organized into its own self-contained directory containing:
 | **02** | [**Nginx Reverse Proxy with Docker Compose**](./02-nginx-reverse-proxy/) | `Nginx`, `Docker Compose`, `Docker`, `AWS EC2`, `Ubuntu` | Multi-container orchestration with Docker Compose, configuring Nginx as a reverse proxy to route standard HTTP (port 80) traffic to an isolated Next.js container (port 3000). | Completed |
 | **03** | [**Nginx HTTPS with Certbot & DuckDNS**](./03-nginx-https/) | `Nginx`, `Certbot`, `Let's Encrypt`, `DuckDNS`, `Docker Compose`, `TLS/SSL` | Automating TLS/SSL encryption for Next.js with Let's Encrypt and Certbot on AWS EC2, resolving the two-stage ACME bootstrap, automatic HTTP-to-HTTPS 301 redirection, and cron renewal automation. | Completed |
 | **04** | [**Automated CI/CD Pipeline with GitHub Actions**](./04-github-actions-ci-cd-pipeline/) | `GitHub Actions`, `Docker`, `GHCR`, `AWS EC2`, `Docker Compose` | Automating Docker image builds, publishing images to the GitHub Container Registry, and deploying updates to AWS EC2 with GitHub Actions. | Completed |
+| **05** | [**Managing Production Secrets and Environment Variables in Next.js**](./05-env-secrets-lab/) | `Next.js`, `Docker`, `GitHub Actions`, `AWS EC2`, `Docker Compose` | Securely separating public build-time configuration from private runtime secrets across Docker builds and deployments. | Completed |
 
 ---
 
@@ -34,7 +35,9 @@ home-labs/
 ├── README.md                    # Root index & homelab roadmap
 ├── 01-containerized-nextapp/    # Lab 01: Dockerized Next.js on AWS EC2
 ├── 02-nginx-reverse-proxy/      # Lab 02: Nginx reverse proxy with Docker Compose
-└── 03-nginx-https/              # Lab 03: Automated TLS/HTTPS with Certbot & DuckDNS
+├── 03-nginx-https/              # Lab 03: Automated TLS/HTTPS with Certbot & DuckDNS
+├── 04-github-actions-ci-cd-pipeline/ # Lab 04: Automated CI/CD with GitHub Actions and GHCR
+└── 05-env-secrets-lab/          # Lab 05: Production secrets and environment variables
 ```
 
 ---
@@ -42,12 +45,14 @@ home-labs/
 ## 🛠️ Core Technologies & Tooling
 
 - **Operating Systems**: Ubuntu Linux (Server LTS), Debian
-- **Containers & Runtimes**: Docker Engine, Docker Compose, Docker Buildx, Bun, Node.js
+- **Containers & Runtimes**: Docker Engine, Docker Compose, Docker Buildx, Docker `ARG`/`ENV`, Bun, Node.js
 - **Web Servers, Proxies & Security**: Nginx, Certbot (Let's Encrypt), SSL/TLS Termination
 - **DNS & Networking**: DuckDNS, Dynamic DNS, AWS Security Groups
 - **Cloud & Infrastructure**: AWS (EC2, VPC)
-- **Frameworks & Languages**: Next.js (App Router), TypeScript, React, Bash / Shell scripting
-- **Automation & DevOps**: Git, GitHub Actions, systemd, cron
+- **Frameworks & Languages**: Next.js (App Router, Partial Prerendering, Suspense), TypeScript, React, Bash / Shell scripting
+- **CI/CD & Registries**: GitHub Actions, GitHub-hosted runners, GitHub Container Registry (GHCR), Docker image publishing
+- **Deployment & Secrets**: SSH (ed25519 deployment keys), Docker Compose runtime injection, `.env.production`, build-time and runtime environment separation
+- **Automation & Operations**: Git, systemd, cron
 
 ---
 
