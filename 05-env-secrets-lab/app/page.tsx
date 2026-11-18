@@ -1,7 +1,10 @@
-export const dynamic = 'force-dynamic'
+import { headers } from 'next/headers';
 
-export default function Home() {
-  console.log(process.env.SECRET_SERVER_KEY);
+export default async function Home() {
+  // Calling headers() automatically forces this page to render dynamically at runtime
+  await headers(); 
+
+  console.log("Runtime EC2 Secret:", process.env.SECRET_SERVER_KEY);
 
   return (
     <main>
