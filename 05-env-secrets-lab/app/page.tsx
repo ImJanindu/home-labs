@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 export default function Home() {
   console.log(process.env.SECRET_SERVER_KEY);
 
